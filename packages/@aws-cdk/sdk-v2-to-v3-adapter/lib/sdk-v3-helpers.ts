@@ -9,7 +9,8 @@ interface SdkV3Package {
 }
 
 export function loadV3ClientPackage(service: string): SdkV3Package {
-  const packageName = getV3ClientPackageName(service);
+  const packageName = service.startsWith('@aws-sdk/') ? service : getV3ClientPackageName(service);
+
   try {
     /* eslint-disable-next-line @typescript-eslint/no-require-imports */
     const pkg = require(packageName);
@@ -17,7 +18,7 @@ export function loadV3ClientPackage(service: string): SdkV3Package {
     const { version } = require(packageName + '/package.json');
 
     return {
-      service,
+      service: packageName.replace('@aws-sdk/client-', ''),
       pkg,
       packageName,
       packageVersion: version,
@@ -27,7 +28,7 @@ export function loadV3ClientPackage(service: string): SdkV3Package {
   }
 }
 
-export function getV3Client(sdkPkg: SdkV3Package, clientOptions: any): any {
+export function getV3Client(sdkPkg: SdkV3Package, clientOptions: any = {}): any {
   try {
     const ServiceClient = findV3ClientConstructor(sdkPkg.pkg);
     return new ServiceClient(clientOptions);
