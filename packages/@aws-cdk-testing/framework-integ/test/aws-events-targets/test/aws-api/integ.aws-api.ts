@@ -1,6 +1,7 @@
 import * as events from 'aws-cdk-lib/aws-events';
 import * as cdk from 'aws-cdk-lib';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
@@ -22,7 +23,7 @@ class AwsApi extends cdk.Stack {
       parameters: {
         service: 'cool-service',
         forceNewDeployment: true,
-      } as AWS.ECS.UpdateServiceRequest,
+      },
     }));
 
     scheduleRule.addTarget(new targets.AwsApi({
@@ -30,7 +31,7 @@ class AwsApi extends cdk.Stack {
       action: 'stopDBInstance',
       parameters: {
         DBInstanceIdentifier: 'dev-instance',
-      } as AWS.RDS.StopDBInstanceMessage,
+      },
     }));
 
     // Create snapshots when a DB instance restarts
@@ -48,10 +49,13 @@ class AwsApi extends cdk.Stack {
       action: 'createDBSnapshot',
       parameters: {
         DBInstanceIdentifier: events.EventField.fromPath('$.detail.SourceArn'),
-      } as AWS.RDS.CreateDBSnapshotMessage,
+      },
     }));
   }
 }
 
-new AwsApi(app, 'aws-cdk-aws-api-target-integ');
-app.synth();
+const stack = new AwsApi(app, 'aws-cdk-aws-api-target-integ');
+
+new IntegTest(app, 'aws-api-integ', {
+  testCases: [stack],
+});
