@@ -1,8 +1,7 @@
 /* eslint-disable no-console */
-import { mockClient } from 'aws-sdk-client-mock';
-import 'aws-sdk-client-mock-jest';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { ECSClient, UpdateServiceCommand, UpdateServiceCommandInput, ServiceNotFoundException } from '@aws-sdk/client-ecs';
+import { mockClient } from 'aws-sdk-client-mock';
+import 'aws-sdk-client-mock-jest' ;
 import { handler } from '../../../lib/aws-events-targets/aws-api-handler';
 
 console.log = jest.fn();
