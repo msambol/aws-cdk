@@ -58,15 +58,16 @@ class AwsApi extends cdk.Stack {
     // A custom rule & target to update a SSM Parameter
     // In assertions a custom event will be fired to update the parameter value and the new value will be asserted on
     this.parameterUnderTest = new StringParameter(this, 'TestParameter', {
-      parameterName: '/aws-cdk/integ/aws-event-targets/aws-api-target/default-param',
+      parameterName: '/cdk-integ/aws-event-targets/aws-api-target/default-param',
       stringValue: 'default-value',
     });
 
     const updateSsmRule = new events.Rule(this, 'UpdateSSMRule', {
       eventPattern: {
+        source: ['cdk.integ'],
         detailType: ['SSMUpdateParameter'],
         detail: {
-          Name: this.parameterUnderTest.parameterName,
+          Name: [this.parameterUnderTest.parameterName],
         },
       },
     });
@@ -78,6 +79,7 @@ class AwsApi extends cdk.Stack {
       parameters: {
         Name: events.EventField.fromPath('$.detail.Name'),
         Value: events.EventField.fromPath('$.detail.Value'),
+        Overwrite: true,
       },
     }));
   }
@@ -89,21 +91,29 @@ const test = new IntegTest(app, 'aws-api-integ', {
   testCases: [stack],
 });
 
-test.assertions
-  .awsApiCall('Events', 'putEvents', {
+const putEvent = test.assertions
+  .awsApiCall('EventBridge', 'putEvents', {
     Entries: [{
+      Source: 'cdk.integ',
       DetailType: 'SSMUpdateParameter',
-      Detail: {
+      Detail: JSON.stringify({
         Name: stack.parameterUnderTest.parameterName,
         Value: 'new-value',
-      },
+      }),
     }],
-  })
-  .next(
-    test.assertions
-      .awsApiCall('SSM', 'getParameter', {
-        Name: stack.parameterUnderTest.parameterName,
-      }, ['Parameter.Value'])
-      .assertAtPath('Parameter.Value', ExpectedResult.stringLikeRegexp('new-value'))
-      .waitForAssertions({ totalTimeout: cdk.Duration.minutes(1) }),
-  );
+  });
+
+putEvent.provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['events:PutEvents'],
+  Resource: ['*'],
+});
+
+putEvent.next(
+  test.assertions
+    .awsApiCall('SSM', 'getParameter', {
+      Name: stack.parameterUnderTest.parameterName,
+    }, ['Parameter.Value'])
+    .assertAtPath('Parameter.Value', ExpectedResult.stringLikeRegexp('new-value'))
+    .waitForAssertions({ totalTimeout: cdk.Duration.minutes(1) }),
+);
