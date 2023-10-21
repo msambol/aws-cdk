@@ -14,10 +14,21 @@ const secret = new DatabaseSecret(stack, 'test-secret', {
   dbname: 'admindb',
   secretName: 'admin-secret',
 });
+const secretCustomPasswordLength = new DatabaseSecret(stack, 'test-secret', {
+  username: 'adminCustomPasswordLength',
+  dbname: 'admindbCustomPasswordLength',
+  secretName: 'admin-secret-custom-password-length',
+  passwordLength: 28,
+});
 
 const cluster = new ServerlessCluster(stack, 'Database', {
   engine: DatabaseClusterEngine.AURORA_MYSQL,
   credentials: Credentials.fromSecret(secret),
+  storageEncryptionKey: kmsKey,
+});
+const clusterCustomPasswordLength = new ServerlessCluster(stack, 'Database', {
+  engine: DatabaseClusterEngine.AURORA_MYSQL,
+  credentials: Credentials.fromSecret(secretCustomPasswordLength),
   storageEncryptionKey: kmsKey,
 });
 
@@ -25,8 +36,15 @@ secret.addRotationSchedule('test-schedule', {
   hostedRotation: secretsmanager.HostedRotation.mysqlSingleUser(),
 });
 
+secretCustomPasswordLength.addRotationSchedule('test-schedule-custom-password-length', {
+  hostedRotation: secretsmanager.HostedRotation.mysqlSingleUser(),
+});
+
 cluster.grantDataApiAccess(new iam.AccountRootPrincipal());
 cluster.grantDataApiAccess(new iam.ServicePrincipal('ecs-tasks.amazonaws.com'));
+
+clusterCustomPasswordLength.grantDataApiAccess(new iam.AccountRootPrincipal());
+clusterCustomPasswordLength.grantDataApiAccess(new iam.ServicePrincipal('ecs-tasks.amazonaws.com'));
 
 new IntegTest(app, 'cdk-rds-integ-secret-rotation', {
   testCases: [stack],

@@ -475,6 +475,13 @@ export interface CommonRotationUserOptions {
   readonly excludeCharacters?: string;
 
   /**
+   * The length of the password.
+   *
+   * @default 30
+   */
+  readonly passwordLength?: number;
+
+  /**
    * Where to place the rotation Lambda function
    *
    * @default - same placement as instance or cluster

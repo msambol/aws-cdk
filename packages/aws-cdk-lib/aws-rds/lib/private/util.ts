@@ -17,6 +17,9 @@ import { CommonRotationUserOptions, Credentials, SnapshotCredentials } from '../
  */
 export const DEFAULT_PASSWORD_EXCLUDE_CHARS = " %+~`#$&*()|[]{}:;<>?!'/@\"\\";
 
+/** The default password length. Oracle passwords cannot have more than 30 characters. */
+export const DEFAULT_PASSWORD_LENGTH = 30;
+
 /** Common base of `DatabaseInstanceProps` and `DatabaseClusterBaseProps` that has only the S3 props */
 export interface DatabaseS3ImportExportProps {
   readonly s3ImportRole?: iam.IRole;
@@ -125,6 +128,7 @@ export function renderSnapshotCredentials(scope: Construct, credentials?: Snapsh
         username: renderedCredentials.username,
         encryptionKey: renderedCredentials.encryptionKey,
         excludeCharacters: renderedCredentials.excludeCharacters,
+        passwordLength: renderedCredentials.password?.toString.length,
         replaceOnPasswordCriteriaChanges: renderedCredentials.replaceOnPasswordCriteriaChanges,
         replicaRegions: renderedCredentials.replicaRegions,
       }),
@@ -165,6 +169,7 @@ export function renderUnless<A>(value: A, suppressValue: A): A | undefined {
 export function applyDefaultRotationOptions(options: CommonRotationUserOptions, defaultvpcSubnets?: ec2.SubnetSelection): CommonRotationUserOptions {
   return {
     excludeCharacters: DEFAULT_PASSWORD_EXCLUDE_CHARS,
+    passwordLength: DEFAULT_PASSWORD_LENGTH,
     vpcSubnets: defaultvpcSubnets,
     ...options,
   };

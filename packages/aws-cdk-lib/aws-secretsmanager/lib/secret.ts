@@ -616,6 +616,9 @@ export class Secret extends SecretBase {
    */
   public readonly excludeCharacters?: string;
 
+  /** The length of the secret when it is generated. */
+  public readonly passwordLength?: number;
+
   private replicaRegions: secretsmanager.CfnSecret.ReplicaRegionProperty[] = [];
 
   protected readonly autoCreatePolicy = true;
@@ -680,6 +683,7 @@ export class Secret extends SecretBase {
     }
 
     this.excludeCharacters = props.generateSecretString?.excludeCharacters;
+    this.passwordLength = props.generateSecretString?.passwordLength;
   }
 
   private resolveSecretObjectValue(secretObject: { [key: string]: SecretValue }): string {

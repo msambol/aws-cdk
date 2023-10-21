@@ -62,7 +62,7 @@ describe('serverless cluster from snapshot', () => {
       MasterUserPassword: {
         'Fn::Join': ['', [
           '{{resolve:secretsmanager:',
-          { Ref: 'ServerlessDatabaseSecret813910E98ee0a797cad8a68dbeb85f8698cdb5bb' },
+          { Ref: 'ServerlessDatabaseSecret813910E9bcdbcf22c7626ef0af1b2cd996f6bb52' },
           ':SecretString:password::}}',
         ]],
       },

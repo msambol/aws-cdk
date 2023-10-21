@@ -249,6 +249,13 @@ export interface SecretRotationProps {
   readonly excludeCharacters?: string;
 
   /**
+   * The length of the password
+   *
+   * @default - 32
+   */
+  readonly passwordLength?: number;
+
+  /**
    * The VPC interface endpoint to use for the Secrets Manager API
    *
    * If you enable private DNS hostnames for your VPC private endpoint (the default), you don't
@@ -302,6 +309,10 @@ export class SecretRotation extends Construct {
 
     if (props.excludeCharacters !== undefined) {
       parameters.excludeCharacters = props.excludeCharacters;
+    }
+
+    if (props.passwordLength !== undefined) {
+      parameters.passwordLength = props.passwordLength.toString();
     }
 
     if (props.secret.encryptionKey) {

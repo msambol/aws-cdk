@@ -16,6 +16,12 @@ import { Duration, Resource, Stack } from '../../core';
 const DEFAULT_PASSWORD_EXCLUDE_CHARS = " %+~`#$&*()|[]{}:;<>?!'/@\"\\";
 
 /**
+ * The default password length for generated passwords for database users.
+ * Oracle passwords cannot have more than 30 characters.
+ */
+const DEFAULT_PASSWORD_LENGTH = 30;
+
+/**
  * Options to add a rotation schedule to a secret.
  */
 export interface RotationScheduleOptions {
@@ -193,6 +199,13 @@ export interface SingleUserHostedRotationOptions {
    * secret or " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
    */
   readonly excludeCharacters?: string,
+
+  /**
+   * The password length.
+   *
+   * @default the same length as the one used for the secret or 32.
+   */
+  readonly passwordLength?: number,
 }
 
 /**

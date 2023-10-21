@@ -378,7 +378,7 @@ describe('instance', () => {
         MasterUserPassword: {
           'Fn::Join': ['', [
             '{{resolve:secretsmanager:',
-            { Ref: 'InstanceSecretB6DFA6BE8ee0a797cad8a68dbeb85f8698cdb5bb' },
+            { Ref: 'InstanceSecretB6DFA6BEbcdbcf22c7626ef0af1b2cd996f6bb52' },
             ':SecretString:password::}}',
           ]],
         },
@@ -1629,7 +1629,7 @@ describe('instance', () => {
           [
             '{{resolve:secretsmanager:',
             {
-              Ref: 'DatabaseSecretC9203AE33fdaad7efa858a3daf9490cf0a702aeb', // logical id is a hash
+              Ref: 'DatabaseSecretC9203AE3414c680e2707b4be512cb62a802b5977', // logical id is a hash
             },
             ':SecretString:password::}}',
           ],
