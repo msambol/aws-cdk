@@ -18,6 +18,23 @@ test('from a package-lock.json with LogLevel.ERROR', () => {
   expect(packageManager.installCommand).toEqual(['npm', 'ci', '--loglevel', logLevel]);
 });
 
+test('from a package-lock.json with LogLevel.VERBOSE', () => {
+  const logLevel = LogLevel.VERBOSE;
+  const packageManager = PackageManager.fromLockFile('/path/to/package-lock.json', logLevel);
+  expect(packageManager.installCommand).toEqual(['npm', 'ci', '--loglevel', logLevel]);
+});
+
+test('from a package-lock.json with LogLevel.SILLY', () => {
+  const logLevel = LogLevel.SILLY;
+  const packageManager = PackageManager.fromLockFile('/path/to/package-lock.json', logLevel);
+  expect(packageManager.installCommand).toEqual(['npm', 'ci', '--loglevel', logLevel]);
+});
+
+test('from a package-lock.json with no logLevel set', () => {
+  const packageManager = PackageManager.fromLockFile('/path/to/package-lock.json');
+  expect(packageManager.installCommand).toEqual(['npm', 'ci']);
+});
+
 test('from a yarn.lock', () => {
   const packageManager = PackageManager.fromLockFile('/path/to/yarn.lock');
   expect(packageManager.lockFile).toEqual(LockFile.YARN);
@@ -33,6 +50,16 @@ test('from a yarn.lock with LogLevel.ERROR', () => {
   expect(packageManager.installCommand).toEqual(['yarn', 'install', '--no-immutable', '--silent']);
 });
 
+test('from a yarn.lock with LogLevel.VERBOSE', () => {
+  const packageManager = PackageManager.fromLockFile('/path/to/yarn.lock', LogLevel.VERBOSE);
+  expect(packageManager.installCommand).toEqual(['yarn', 'install', '--no-immutable', '--silent']);
+});
+
+test('from a yarn.lock with LogLevel.SILLY', () => {
+  const packageManager = PackageManager.fromLockFile('/path/to/yarn.lock', LogLevel.SILLY);
+  expect(packageManager.installCommand).toEqual(['yarn', 'install', '--no-immutable', '--silent']);
+});
+
 test('from a pnpm-lock.yaml', () => {
   const packageManager = PackageManager.fromLockFile('/path/to/pnpm-lock.yaml');
   expect(packageManager.lockFile).toEqual(LockFile.PNPM);
@@ -45,6 +72,11 @@ test('from a pnpm-lock.yaml', () => {
 
 test('from a pnpm-lock.yaml with LogLevel.ERROR', () => {
   const packageManager = PackageManager.fromLockFile('/path/to/pnpm-lock.yaml', LogLevel.ERROR);
+  expect(packageManager.installCommand).toEqual(['pnpm', 'install', '--reporter', 'silent', '--config.node-linker=hoisted', '--config.package-import-method=clone-or-copy', '--no-prefer-frozen-lockfile']);
+});
+
+test('from a pnpm-lock.yaml with LogLevel.SILLY', () => {
+  const packageManager = PackageManager.fromLockFile('/path/to/pnpm-lock.yaml', LogLevel.SILLY);
   expect(packageManager.installCommand).toEqual(['pnpm', 'install', '--reporter', 'silent', '--config.node-linker=hoisted', '--config.package-import-method=clone-or-copy', '--no-prefer-frozen-lockfile']);
 });
 

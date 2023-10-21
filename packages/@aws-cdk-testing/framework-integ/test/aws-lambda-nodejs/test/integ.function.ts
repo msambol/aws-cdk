@@ -25,6 +25,14 @@ class TestStack extends Stack {
       runtime: STANDARD_NODEJS_RUNTIME,
     });
 
+    new lambda.NodejsFunction(this, 'js-handler-log-level', {
+      entry: path.join(__dirname, 'integ-handlers/js-handler.js'),
+      runtime: STANDARD_NODEJS_RUNTIME,
+      bundling: {
+        logLevel: lambda.LogLevel.VERBOSE,
+      },
+    });
+
     new lambda.NodejsFunction(this, 'ts-handler-vpc', {
       entry: path.join(__dirname, 'integ-handlers/ts-handler.ts'),
       runtime: STANDARD_NODEJS_RUNTIME,
