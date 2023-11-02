@@ -184,6 +184,8 @@ constructLinter.add({
   message: 'construct interface must extend core.IConstruct',
   eval: e => {
     if (!e.ctx.interfaceType) { return; }
+    // ICfn interfaces are not construct interfaces
+    if (e.ctx.interfaceType.name.startsWith('ICfn')) { return; }
     const interfaceBase = e.ctx.sys.findInterface(e.ctx.core.constructInterface.fqn);
     e.assert(e.ctx.interfaceType.extends(interfaceBase), e.ctx.interfaceType.fqn);
   },
