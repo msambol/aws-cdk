@@ -6,6 +6,9 @@ const app = new App();
 
 const stack = new Stack(app, 'aws-cdk-s3');
 
+/* eslint-disable no-console */
+console.log(new Date('2019-10-01'));
+
 // Test a lifecycle rule with an expiration DATE
 new Bucket(stack, 'MyBucket', {
   lifecycleRules: [

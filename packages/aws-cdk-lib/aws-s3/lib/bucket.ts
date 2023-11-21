@@ -2189,6 +2189,9 @@ export class Bucket extends BucketBase {
         objectSizeGreaterThan: rule.objectSizeGreaterThan,
       };
 
+      /* eslint-disable no-console */
+      console.log(x.expirationDate);
+
       return x;
     }
   }
