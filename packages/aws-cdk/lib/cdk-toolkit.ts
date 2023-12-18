@@ -20,6 +20,7 @@ import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironm
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { ResourceImporter } from './import';
 import { data, debug, error, highlight, print, success, warning, withCorkedLogging } from './logging';
+import { MigrateDeployment } from './migrate-deployment';
 import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
@@ -180,6 +181,8 @@ export class CdkToolkit {
     const elapsedSynthTime = new Date().getTime() - startSynthTime;
     print('\n✨  Synthesis time: %ss\n', formatTime(elapsedSynthTime));
 
+    await this.tryMigrateResources(stackCollection, options);
+
     const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
 
     const parameterMap: { [name: string]: { [name: string]: string | undefined } } = { '*': {} };
@@ -284,8 +287,6 @@ export class CdkToolkit {
         tags = tagsForStack(stack);
       }
 
-      const resourcesToImport = this.tryGetMigrateResourcesToImport(stack.environment);
-
       let elapsedDeployTime = 0;
       try {
         const result = await this.props.deployments.deployStack({
@@ -308,7 +309,6 @@ export class CdkToolkit {
           hotswap: options.hotswap,
           extraUserAgent: options.extraUserAgent,
           assetParallelism: options.assetParallelism,
-          resourcesToImport,
         });
 
         const message = result.noOp
@@ -333,10 +333,6 @@ export class CdkToolkit {
         print('Stack ARN:');
 
         data(result.stackArn);
-
-        if (resourcesToImport) {
-          fs.rmSync('migrate.json');
-        }
 
       } catch (e) {
         error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), e);
@@ -870,26 +866,59 @@ export class CdkToolkit {
 
   /**
    * Checks to see if a migrate.json file exists. If it does and the source is either `filepath` or
-   * is in the same environment as the stack deployment and returns the cdk migrate resources to be
-   * imported into the new stack.
-   * @param env The environment to which the stack is being deployed
-   * @returns The resources to import into the stack
+   * is in the same environment as the stack deployment, a new stack is created and the resources are
+   * migrated to the stack using an IMPORT changeset. The normal deployment will resume after this is complete
+   * to add back in any outputs and the CDKMetadata.
    */
-  private tryGetMigrateResourcesToImport(env: cxapi.Environment): ResourcesToImport | undefined {
+  private async tryMigrateResources(stacks: StackCollection, options: DeployOptions): Promise<void> {
+    const stack = stacks.stackArtifacts[0];
+    const resourcesToImport = this.tryGetResources(stack);
+
+    if (resourcesToImport) {
+      return this.performResourceMigration(stack, resourcesToImport, options);
+    }
+  }
+
+  private tryGetResources(stack: cxapi.CloudFormationStackArtifact) {
     try {
       const migrateFile = fs.readJsonSync('migrate.json', { encoding: 'utf-8' });
-      if (migrateFile.Source === 'localfile') {
-        return migrateFile.Resources;
-      }
       const sourceEnv = (migrateFile.Source as string).split(':');
-      if (sourceEnv[4] === env.account && sourceEnv[3] === env.region) {
+      if (sourceEnv[0] === 'localfile' ||
+        (sourceEnv[4] === stack.environment.account && sourceEnv[3] === stack.environment.region)) {
         return migrateFile.Resources;
       }
-      return undefined;
     } catch (e) {
-      // No migrate file is present, resume deployment as usual
-      return undefined;
+      // Nothing to do
     }
+  }
+
+  /**
+   * Creates a new stack with just the resources to be migrated
+   */
+  private async performResourceMigration(stack: cxapi.CloudFormationStackArtifact, resourcesToImport: ResourcesToImport, options: DeployOptions) {
+    const migrateDeployment = new MigrateDeployment(stack, this.props.deployments);
+    print('%s: creating stack for resource migration...', chalk.bold(stack.displayName));
+    print('%s: importing resources into stack...', chalk.bold(stack.displayName));
+
+    const startDeployTime = new Date().getTime();
+    let elapsedDeployTime = 0;
+
+    // Initial Deployment
+    await migrateDeployment.migrateResources(resourcesToImport, {
+      stack,
+      deployName: stack.stackName,
+      roleArn: options.roleArn,
+      toolkitStackName: options.toolkitStackName,
+      tags: tagsForStack(stack),
+      deploymentMethod: options.deploymentMethod,
+      progress: options.progress,
+      rollback: options.rollback,
+    });
+
+    elapsedDeployTime = new Date().getTime() - startDeployTime;
+    print('\n✨  Resource migration time: %ss\n', formatTime(elapsedDeployTime));
+
+    fs.rmSync('migrate.json');
   }
 }
 
