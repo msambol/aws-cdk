@@ -919,6 +919,7 @@ export class CdkToolkit {
     print('\n✨  Resource migration time: %ss\n', formatTime(elapsedDeployTime));
 
     fs.rmSync('migrate.json');
+    print('%s: applying CDKMetadata and Outputs to stack (if applicable)...', chalk.bold(stack.displayName));
   }
 }
 
