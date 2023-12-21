@@ -20,7 +20,6 @@ import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironm
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { ResourceImporter } from './import';
 import { data, debug, error, highlight, print, success, warning, withCorkedLogging } from './logging';
-import { MigrateDeployment } from './migrate-deployment';
 import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
@@ -530,7 +529,7 @@ export class CdkToolkit {
     // Import the resources according to the given mapping
     print('%s: importing resources into stack...', chalk.bold(stack.displayName));
     const tags = tagsForStack(stack);
-    await resourceImporter.importResources(actualImport, {
+    await resourceImporter.importResourcesFromMap(actualImport, {
       stack,
       deployName: stack.stackName,
       roleArn: options.roleArn,
@@ -896,7 +895,7 @@ export class CdkToolkit {
    * Creates a new stack with just the resources to be migrated
    */
   private async performResourceMigration(stack: cxapi.CloudFormationStackArtifact, resourcesToImport: ResourcesToImport, options: DeployOptions) {
-    const migrateDeployment = new MigrateDeployment(stack, this.props.deployments);
+    const migrateDeployment = new ResourceImporter(stack, this.props.deployments);
     print('%s: creating stack for resource migration...', chalk.bold(stack.displayName));
     print('%s: importing resources into stack...', chalk.bold(stack.displayName));
 
@@ -904,12 +903,11 @@ export class CdkToolkit {
     let elapsedDeployTime = 0;
 
     // Initial Deployment
-    await migrateDeployment.migrateResources(resourcesToImport, {
+    await migrateDeployment.importResourcesFromMigrate(resourcesToImport, {
       stack,
       deployName: stack.stackName,
       roleArn: options.roleArn,
       toolkitStackName: options.toolkitStackName,
-      tags: tagsForStack(stack),
       deploymentMethod: options.deploymentMethod,
       progress: options.progress,
       rollback: options.rollback,

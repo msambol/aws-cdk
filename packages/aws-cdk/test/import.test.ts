@@ -164,7 +164,7 @@ test('asks human to confirm automic import if identifier is in template', async 
   };
 
   // WHEN
-  await importer.importResources(importMap, {
+  await importer.importResourcesFromMap(importMap, {
     stack: STACK_WITH_QUEUE,
   });
 
@@ -289,7 +289,7 @@ async function importTemplateFromClean(stack: ReturnType<typeof testStack>) {
   const importer = new ResourceImporter(stack, deployments);
   const { additions } = await importer.discoverImportableResources();
   const importable = await importer.askForResourceIdentifiers(additions);
-  await importer.importResources(importable, { stack });
+  await importer.importResourcesFromMap(importable, { stack });
   return importable;
 }
 
