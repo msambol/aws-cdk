@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/70d61f1450c66b2b673cecce3be0d6b9e72e636cdadaa25922df078e8099bfaf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e00a1a9e901bbc68cea042ffc2c9166791d0859b52adda8cf66c7feed6974f3f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -145,19 +145,19 @@
       },
       "displayName": "integtest-restapi-with-authorizer-and-proxy"
     },
-    "inlineapidefinitionDefaultTestDeployAssert923CAC29.assets": {
+    "apigatewaywithauthorizerandproxyDefaultTestDeployAssertDBEA1774.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "inlineapidefinitionDefaultTestDeployAssert923CAC29.assets.json",
+        "file": "apigatewaywithauthorizerandproxyDefaultTestDeployAssertDBEA1774.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "inlineapidefinitionDefaultTestDeployAssert923CAC29": {
+    "apigatewaywithauthorizerandproxyDefaultTestDeployAssertDBEA1774": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "inlineapidefinitionDefaultTestDeployAssert923CAC29.template.json",
+        "templateFile": "apigatewaywithauthorizerandproxyDefaultTestDeployAssertDBEA1774.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -166,7 +166,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "inlineapidefinitionDefaultTestDeployAssert923CAC29.assets"
+          "apigatewaywithauthorizerandproxyDefaultTestDeployAssertDBEA1774.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -175,23 +175,23 @@
         }
       },
       "dependencies": [
-        "inlineapidefinitionDefaultTestDeployAssert923CAC29.assets"
+        "apigatewaywithauthorizerandproxyDefaultTestDeployAssertDBEA1774.assets"
       ],
       "metadata": {
-        "/inline-api-definition/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/apigateway-with-authorizer-and-proxy/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/inline-api-definition/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/apigateway-with-authorizer-and-proxy/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "inline-api-definition/DefaultTest/DeployAssert"
+      "displayName": "apigateway-with-authorizer-and-proxy/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

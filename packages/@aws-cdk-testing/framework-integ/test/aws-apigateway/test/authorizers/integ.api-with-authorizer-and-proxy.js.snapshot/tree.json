@@ -698,7 +698,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "9b1c02dceb23f18926cd800b8becfc1c86a38a23e76b22cc34d51175290e23a0.zip"
+                      "s3Key": "8b7a863f778f5314bab7fdad7a7957ef133c826bb93a8611a3bac36ae684e683.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -743,17 +743,17 @@
           "version": "0.0.0"
         }
       },
-      "inline-api-definition": {
-        "id": "inline-api-definition",
-        "path": "inline-api-definition",
+      "apigateway-with-authorizer-and-proxy": {
+        "id": "apigateway-with-authorizer-and-proxy",
+        "path": "apigateway-with-authorizer-and-proxy",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "inline-api-definition/DefaultTest",
+            "path": "apigateway-with-authorizer-and-proxy/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "inline-api-definition/DefaultTest/Default",
+                "path": "apigateway-with-authorizer-and-proxy/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -761,11 +761,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "inline-api-definition/DefaultTest/DeployAssert",
+                "path": "apigateway-with-authorizer-and-proxy/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "inline-api-definition/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "apigateway-with-authorizer-and-proxy/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -773,7 +773,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "inline-api-definition/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "apigateway-with-authorizer-and-proxy/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
