@@ -785,6 +785,66 @@ describe('method', () => {
 
   });
 
+  test('Method options Auth Scopes should be None when Auth Type from Method is IAM', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', {
+      cloudWatchRole: false,
+      deploy: false,
+      defaultMethodOptions: {
+        authorizationType: apigw.AuthorizationType.IAM,
+        authorizationScopes: ['DefaultAuth'],
+      },
+    });
+
+    // WHEN
+    new apigw.Method(stack, 'MethodAuthScopeUsed', {
+      httpMethod: 'OPTIONS',
+      resource: api.root,
+      options: {
+        apiKeyRequired: true,
+        authorizationType: apigw.AuthorizationType.NONE,
+        authorizationScopes: ['MethodAuthScope'],
+      },
+    });
+
+    // THEN
+    expect(() => Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      AuthorizationScopes: ['DefaultAuth'],
+    })).toThrow(/Template has 1 resources with type AWS::ApiGateway::Method, but none match as expected./);
+
+  });
+
+  test('Method options Auth Scopes should be None when Auth Type from Method is CUSTOM', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api', {
+      cloudWatchRole: false,
+      deploy: false,
+      defaultMethodOptions: {
+        authorizationType: apigw.AuthorizationType.CUSTOM,
+        authorizationScopes: ['DefaultAuth'],
+      },
+    });
+
+    // WHEN
+    new apigw.Method(stack, 'MethodAuthScopeUsed', {
+      httpMethod: 'OPTIONS',
+      resource: api.root,
+      options: {
+        apiKeyRequired: true,
+        authorizationType: apigw.AuthorizationType.NONE,
+        authorizationScopes: ['MethodAuthScope'],
+      },
+    });
+
+    // THEN
+    expect(() => Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      AuthorizationScopes: ['DefaultAuth'],
+    })).toThrow(/Template has 1 resources with type AWS::ApiGateway::Method, but none match as expected./);
+
+  });
+
   test('Method options Auth Scopes should be None when Auth Type from RestApi is None', () => {
     // GIVEN
     const stack = new cdk.Stack();
