@@ -199,6 +199,11 @@ export class Method extends Resource {
         `which is different from what is required by the authorizer [${authorizer.authorizationType}]`);
     }
 
+    // When AuthorizationType is None, there shouldn't be any AuthorizationScope since AuthorizationScope should only
+    // be applied to COGNITO_USER_POOLS AuthorizationType.
+    const defaultScopes = options.authorizationScopes ?? defaultMethodOptions.authorizationScopes;
+    const authorizationScopes = authorizationTypeOption === AuthorizationType.COGNITO ? defaultScopes : undefined;
+
     if (Authorizer.isAuthorizer(authorizer)) {
       authorizer._attachToApi(this.api);
     }
@@ -223,7 +228,7 @@ export class Method extends Resource {
       methodResponses: Lazy.any({ produce: () => this.renderMethodResponses(this.methodResponses) }, { omitEmptyArray: true }),
       requestModels: this.renderRequestModels(options.requestModels),
       requestValidatorId: this.requestValidatorId(options),
-      authorizationScopes: options.authorizationScopes ?? defaultMethodOptions.authorizationScopes,
+      authorizationScopes: authorizationScopes,
     };
 
     const resource = new CfnMethod(this, 'Resource', methodProps);

@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "inline-api-definition/DefaultTest": {
+      "stacks": [
+        "integtest-restapi-with-authorizer-and-proxy"
+      ],
+      "assertionStack": "inline-api-definition/DefaultTest/DeployAssert",
+      "assertionStackName": "inlineapidefinitionDefaultTestDeployAssert923CAC29"
+    }
+  }
+}
