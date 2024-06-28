@@ -218,7 +218,7 @@ through the `objectKey` property.
 ### Masking the output of log statements
 
 When using the Provider framework to create a custom resource, the request and response
-objects are logged by the provider function.If secret values are returned in the custom
+objects are logged by the provider function. If secret values are returned in the custom
 resource's Data object, it would be logged and exposed which possesses security threats.
 
 To mask the output of log statements, you can utilize the `NoEcho` field in the custom
