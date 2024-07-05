@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f567ee39535480ad30d72b99b690c186d9a71571ba248c5ad8552a660e6a8b0e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c0f7ec3fb210996ddcba450ef756960e50643af6a701367f23f3df40c130be80.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -127,7 +127,10 @@
         "/aws-cdk-codepipeline-elastic-beanstalk-deploy/beanstlk-env": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "beanstlkenv"
+            "data": "beanstlkenv",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Pipeline": [
