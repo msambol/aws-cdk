@@ -102,3 +102,25 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
   target: new SomeTarget(targetQueue)
 });
 ```
+
+### Amazon Managed Streaming for Apache Kafka (Amazon MSK)
+
+An Amazon MSK cluster can be used as a source for a pipe. The MSK topic will be polled for new messages and the messages will be sent to the pipe.
+
+```ts
+const cluster = new msk.Cluster(this, 'MskCluster', {
+  clusterName: 'cluster',
+  vpc,
+  kafkaVersion: msk.KafkaVersion.V3_6_0,
+});
+declare const targetQueue: sqs.Queue;
+
+const pipeSource = new sources.MskSource(cluster, {
+  topicName: 'topic'
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+  source: pipeSource,
+  target: new SomeTarget(targetQueue)
+});
+```

@@ -45,3 +45,19 @@ export enum DynamoDBStartingPosition {
    */
   LATEST = 'LATEST',
 }
+
+/**
+ * The position in a MSK stream from which to start reading.
+ */
+export enum MskStartingPosition {
+  /**
+   * Start reading at the last (untrimmed) stream record,
+   * which is the oldest record in the shard.
+   */
+  TRIM_HORIZON = 'TRIM_HORIZON',
+  /**
+   * Start reading just after the most recent stream record in the shard,
+   * so that you always read the most recent data in the shard.
+   */
+  LATEST = 'LATEST',
+}
