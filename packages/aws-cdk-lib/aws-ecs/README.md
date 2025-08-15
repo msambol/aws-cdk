@@ -169,6 +169,22 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+To customize the cache key, use the `additionalCacheKey` parameter.
+This allows you to have multiple lookups with the same parameters
+cache their values separately. This can be useful if you want to
+scope the context variable to a construct (ie, using `additionalCacheKey: this.node.path`),
+so that if the value in the cache needs to be updated, it does not need to be updated
+for all constructs at the same time.
+
+```ts
+declare const vpc: ec2.Vpc;
+const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
+  machineImage: ecs.EcsOptimizedImage.amazonLinux({ cachedInContext: true, additionalCacheKey: this.node.path }),
+  vpc,
+  instanceType: new ec2.InstanceType('t2.micro'),
+});
+```
+
 To use `LaunchTemplate` with `AsgCapacityProvider`, make sure to specify the `userData` in the `LaunchTemplate`:
 
 ```ts
@@ -2054,7 +2070,46 @@ const service = new ecs.FargateService(this, 'FargateService', {
 });
 ```
 
-## Daemon scheduling strategy
+## ECS Native Blue/Green Deployment
+
+Amazon ECS supports native blue/green deployments that allow you to deploy new versions of your services with zero downtime. This deployment strategy creates a new set of tasks (green) alongside the existing tasks (blue), then shifts traffic from the old version to the new version.
+
+[Amazon ECS blue/green deployments](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-blue-green.html)
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const lambdaHook: lambda.Function;
+declare const blueTargetGroup: elbv2.ApplicationTargetGroup;
+declare const greenTargetGroup: elbv2.ApplicationTargetGroup;
+declare const prodListenerRule: elbv2.ApplicationListenerRule;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  deploymentStrategy: ecs.DeploymentStrategy.BLUE_GREEN,
+});
+
+service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaHook, 'PreScaleHook', {
+  lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+}));
+
+const target = service.loadBalancerTarget({
+  containerName: 'nginx',
+  containerPort: 80,
+  protocol: ecs.Protocol.TCP,
+  alternateTarget: new ecs.AlternateTarget('AlternateTarget', {
+    alternateTargetGroup: greenTargetGroup,
+    productionListener: ecs.ListenerRuleConfiguration.applicationListenerRule(prodListenerRule),
+  }),
+});
+
+target.attachToApplicationTargetGroup(blueTargetGroup);
+```
+
+## Daemon Scheduling Strategy
 You can specify whether service use Daemon scheduling strategy by specifying `daemon` option in Service constructs. See [differences between Daemon and Replica scheduling strategy](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html)
 
 ```ts
