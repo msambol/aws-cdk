@@ -1,5 +1,0 @@
-{
-  "exclude": [
-    "no-unused-type:@aws-cdk/aws-pipes-alpha.PipeVariable"
-  ]
-}

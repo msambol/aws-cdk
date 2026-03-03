@@ -1,5 +1,0 @@
-{
-    "exclude": [
-        "construct-ctor-props-optional:@aws-cdk/aws-amplify-alpha.App"
-    ]
-}
